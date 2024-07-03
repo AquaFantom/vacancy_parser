@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+    <div class="ps-3 pb-5 pe-3">
+        <a class="btn btn-outline-light mb-1" href='{% url 'main' %}' role="button"><i class="gg-chevron-left"></i></a>
+        <h2 style="color: white">Вот что мы нашли по вашему запросу:</h2>
+        {% if found > 0 %}
+            <h4 class="text" style="color: rgba(255,255,255,0.85)">Всего найдено вакансий: {{ found }}. Вот некоторые из них:</h4>
+            <div class="row">
+                {% for vacancy in vacancies %}
+                    <div class="card me-2 mt-3 pt-1" style="width: 19rem;">
+                      <div class="card-body">
+                          {% autoescape off %}
+                            <h5 class="card-title">{{ vacancy.name }}</h5>
+                            {% for role in vacancy.professional_roles %}
+                                <h6 class="card-subtitle mb-2 text-body-secondary opacity-75">{{ role.name }}</h6>
+                            {% endfor %}
+                            {% if vacancy.salary.to is not None %}
+                                <p class="fw-semibold">Зарплата до {{ vacancy.salary.to }} {{ vacancy.salary.currency }}</p>
+                            {% elif vacancy.salary.from is not None%}
+                                <p class="fw-semibold">Зарплата от {{ vacancy.salary.from }} {{ vacancy.salary.currency }}</p>
+                            {% else %}
+                                <p class="fw-semibold">Зарплата не указана.</p>
+                            {% endif %}
+                            <p class="card-text">&#8226;
+                                {% if vacancy.snippet.requirement is not None%}
+                                    {{ vacancy.snippet.requirement }}
+                                {% else %}
+                                    Требования не указаны.
+                                {% endif %}
+                            </p>
+                            <p class="card-text">&#8226;
+                                {% if vacancy.snippet.responsibility %}
+                                    {{ vacancy.snippet.responsibility }}
+                                {% else %}
+                                    Обязанности не указаны.
+                                {% endif %}
+                            </p>
+                          {% endautoescape %}
+                        <a href="{{ vacancy.alternate_url }}" class="card-link">Перейти к вакансии</a>
+                      </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>По вашему запросу не найдено вакансий. <br> Попробуйте изменить запрос или попробуйте позже.</p>
+        {% endif %}
+    </div>
+{% endblock %}
